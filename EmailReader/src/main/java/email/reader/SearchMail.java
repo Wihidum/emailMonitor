@@ -44,6 +44,9 @@ public class SearchMail {
 
         Folder inbox = store.getFolder("inbox");
         inbox.open(Folder.READ_WRITE); // Folder.READ_ONLY
+
+
+
         String subject = "Tomcat dependency on application server";
         SearchTerm term = null;
         term = new SubjectTerm(subject);

@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import javax.activation.DataHandler;
 import javax.mail.*;
 
-import javax.mail.internet.InternetAddress;
+
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 import java.io.File;
@@ -21,7 +21,7 @@ public class EmailReaderHelper {
 
     private static Logger logger = Logger.getLogger(EmailReaderHelper.class);
 
-    public static Folder getFolder(String folderType, String username, String password) {
+    public static Folder getFolder(String storeType,String folderType, String username, String password) {
         Folder folder = null;
         Properties props = new Properties();
         try {
@@ -29,9 +29,9 @@ public class EmailReaderHelper {
             props.load(new FileInputStream(new File(path + EmailReaderConstants.SETTINGS_FILE_PATH)));
             Session session = Session.getDefaultInstance(props, null);
             Store store = null;
-            store = session.getStore(EmailReaderConstants.IMAPS);
+            store = session.getStore(storeType);
             store.connect(EmailReaderConstants.SMTP_GMAIL_COM, username, password);
-            store.getFolder(folderType);
+           folder = store.getFolder(folderType);
         } catch (FileNotFoundException e1) {
             logger.error(e1.getMessage());
         } catch (IOException e1) {
@@ -45,6 +45,13 @@ public class EmailReaderHelper {
     }
 
     public static Message[] getMails(String subject, Folder inbox) {
+        if(! inbox.isOpen()){
+            try {
+                inbox.open(Folder.READ_WRITE);
+            } catch (MessagingException e) {
+              logger.error(e.getMessage());
+            }
+        }
         SearchTerm term = new SubjectTerm(subject);
         Message[] messages = null;
         try {
@@ -55,60 +62,88 @@ public class EmailReaderHelper {
         return messages;
     }
 
-    public static MailEvent getMailEvent(Message message){
+    public static MailEvent getMailEvent(Message message) {
         MailEvent event = new MailEvent();
         try {
 
-            String from = InternetAddress.toString(message.getFrom());
-            String replyTo = InternetAddress.toString(
-                    message.getReplyTo());
 
-            String to = InternetAddress.toString(
-                    message.getRecipients(Message.RecipientType.TO));
+            Address[] in = message.getFrom();
+            if(in != null) {
+                for (Address address : in) {
+                    event.addMailfrom(address.toString());
+                }
+            }
+            Address[] to = message.getRecipients(Message.RecipientType.TO);
+            if(to != null) {
+                for (Address addto : to) {
+                    event.addMailto(addto.toString());
+                }
+            }
+            Address[] bcc = message.getRecipients(Message.RecipientType.BCC);
+            if(bcc != null) {
+                for (Address addbcc : bcc) {
+                    event.addMailbcc(addbcc.toString());
+                }
+            }
+            Address[] cc = message.getRecipients(Message.RecipientType.CC);
+            if(cc != null) {
+                for (Address addcc : cc) {
+                    event.addMailcc(addcc.toString());
+                }
+            }
 
+            Address[] replyTo = message.getReplyTo();
+            if(replyTo != null) {
+                for (Address addrep : replyTo) {
+                    event.addReply_to(addrep.toString());
+                }
+            }
+            Address[] recp = message.getAllRecipients();
+            if(recp != null) {
+                for (Address addrecp : recp) {
+                    event.addRecipents(addrecp.toString());
+                }
+            }
 
             String subjectM = message.getSubject();
+            event.setSubject(subjectM);
+
 
             Date sent = message.getSentDate();
-            event.setMailfrom(from);
-            event.setMailto(to);
-            event.setSubject(subjectM);
             event.setSendDate(sent.toLocaleString());
-//            if (message.getContent() instanceof Multipart) {
-//                Multipart multipart = (Multipart) message.getContent();
-//
-//                for (int x = 0; x < multipart.getCount(); x++) {
-//                    BodyPart bodyPart = multipart.getBodyPart(x);
-//
-//                    String disposition = bodyPart.getDisposition();
-//
-//                    if (disposition != null && (disposition.equals(BodyPart.ATTACHMENT))) {
-//                        System.out.println("Mail have some attachment : ");
-//
-//                        DataHandler handler = bodyPart.getDataHandler();
-//                        System.out.println("file name : " + handler.getName());
-//                    } else {
-//                        System.out.println(bodyPart.getContent());
-//                    }
-//
-//
-//                }
-//            }
-//            else{
-//                System.out.println(message.getContent().toString());
-//            }
+
+
+            if (message.getContent() instanceof Multipart) {
+                Multipart multipart = (Multipart) message.getContent();
+
+                for (int x = 0; x < multipart.getCount(); x++) {
+                    BodyPart bodyPart = multipart.getBodyPart(x);
+
+                    String disposition = bodyPart.getDisposition();
+
+                    if (disposition != null && (disposition.equals(BodyPart.ATTACHMENT))) {
+                        event.setHaveAttachement(true);
+                        DataHandler handler = bodyPart.getDataHandler();
+                        event.setAttachedFileName(handler.getName());
+                        event.setAttachedFileType(handler.getContentType());
+                    } else {
+                        event.setContent((String)bodyPart.getContent());
+                    }
+
+
+                }
+            } else {
+              event.setContent(message.getContent().toString());
+
+            }
         } catch (MessagingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
 
-return event;
+        return event;
     }
-
-
-
-
-
-
 
 
 }

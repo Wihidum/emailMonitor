@@ -43,8 +43,16 @@
                         <Bundle-SymbolicName>email-reader</Bundle-SymbolicName>
                         <Bundle-Name>email-reader</Bundle-Name>
                         <Export-Package>
-                          email.reader.*,
+                          email.reader.api,
+                            !email.reader.data.*,
+                           ! email.reader.executor.*,
+                           ! email.reader.util.*
                         </Export-Package>
+                        <Private-Package>
+                           email.reader.data.*,
+                            email.reader.executor.*,
+                            email.reader.util.*
+                        </Private-Package>
                         <Import-Package>
                             *; resolution:=optional
                         </Import-Package>
@@ -61,16 +69,10 @@
             <version>1.4.7</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.0-rc1</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.0-rc1</version>
-        </dependency>
-
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
@@ -97,46 +99,4 @@
             <version>4.2.2</version>
         </dependency>
     </dependencies>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </project>

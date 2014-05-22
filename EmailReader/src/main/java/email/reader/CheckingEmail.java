@@ -34,11 +34,12 @@ package email.reader;
 
             Store store = session.getStore("imaps");
             store
-                    .connect("smtp.gmail.com", "irjanith@gmail.com",
-                            "IJR@17IJR@17");
+                    .connect("smtp.gmail.com", "synapse.demo.1@gmail.com",
+                            "mailpassword1");
             System.out.println(store);
 
             Folder inbox = store.getFolder("inbox");
+
             inbox.open(Folder.READ_WRITE); // Folder.READ_ONLY
             int messageCount = inbox.getMessageCount();
             System.out.println("Total Messages" + messageCount);

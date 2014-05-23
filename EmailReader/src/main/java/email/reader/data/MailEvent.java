@@ -15,7 +15,8 @@ public class MailEvent {
     private List<String> mailbcc;
     private String subject;
     private String sendDate;
-
+    private long threadID;
+    private long messageID;
     private List<String> reply_to;
     private boolean haveAttachement;
     private String attachedFileName;
@@ -57,6 +58,21 @@ public class MailEvent {
         this.haveAttachement = haveAttachement;
     }
 
+    public long getThreadID() {
+        return threadID;
+    }
+
+    public void setThreadID(long threadID) {
+        this.threadID = threadID;
+    }
+
+    public long getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(long messageID) {
+        this.messageID = messageID;
+    }
 
     public String getSubject() {
         return subject;

@@ -8,13 +8,14 @@ import java.util.List;
 
 public class MailEvent {
 
-    private List<String> mailfrom;
     private List<String> recipents;
     private List<String> mailto;
     private List<String> mailcc;
     private List<String> mailbcc;
+    private String mailfrom;
     private String subject;
     private String sendDate;
+    private long sentTime;
     private long threadID;
     private long messageID;
     private List<String> reply_to;
@@ -25,7 +26,6 @@ public class MailEvent {
 
 
     public MailEvent() {
-        mailfrom = new ArrayList<String>();
         recipents = new ArrayList<String>();
         reply_to = new ArrayList<String>();
         mailto = new ArrayList<String>();
@@ -34,12 +34,12 @@ public class MailEvent {
 
     }
 
-    public List<String> getMailfrom() {
+    public String getMailfrom() {
         return mailfrom;
     }
 
     public void addMailfrom(String mailfrom) {
-        this.mailfrom.add(mailfrom);
+        this.mailfrom = mailfrom;
     }
 
     public List<String> getRecipents() {
@@ -73,6 +73,15 @@ public class MailEvent {
     public void setMessageID(long messageID) {
         this.messageID = messageID;
     }
+
+    public long getSentTime() {
+        return sentTime;
+    }
+
+    public void setSentTime(long sentTime) {
+        this.sentTime = sentTime;
+    }
+
 
     public String getSubject() {
         return subject;
@@ -155,10 +164,13 @@ public class MailEvent {
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Subject: " + subject);
-        String from = StringUtils.collectionToCommaDelimitedString(mailfrom);
+        buffer.append("Message ID:" + messageID);
         buffer.append("\n");
-        buffer.append("From: " + from);
+        buffer.append("Thread ID:" + threadID);
+        buffer.append("\n");
+        buffer.append("Subject: " + subject);
+        buffer.append("\n");
+        buffer.append("From: " + mailfrom);
         String bcc = StringUtils.collectionToCommaDelimitedString(mailbcc);
         buffer.append("\n");
         buffer.append("Bcc: " + bcc);
@@ -183,6 +195,8 @@ public class MailEvent {
             buffer.append("\n");
         }
         buffer.append("send Date:" + sendDate);
+        buffer.append("\n");
+        buffer.append("send Time:" + sentTime);
         buffer.append("\n");
         return buffer.toString();
     }

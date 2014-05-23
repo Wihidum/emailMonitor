@@ -1,6 +1,7 @@
 package email.reader.util;
 
 
+import com.sun.mail.gimap.GmailMessage;
 import email.reader.data.MailEvent;
 import org.apache.log4j.Logger;
 
@@ -30,8 +31,10 @@ public class EmailReaderHelper {
             Session session = Session.getDefaultInstance(props, null);
             Store store = null;
             store = session.getStore(storeType);
-            store.connect(EmailReaderConstants.SMTP_GMAIL_COM, username, password);
-           folder = store.getFolder(folderType);
+            if(storeType == EmailReaderConstants.GIMAPS) {
+                store.connect(EmailReaderConstants.SMTP_GMAIL_COM, username, password);
+                folder = store.getFolder(folderType);
+            }
         } catch (FileNotFoundException e1) {
             logger.error(e1.getMessage());
         } catch (IOException e1) {
@@ -136,6 +139,18 @@ public class EmailReaderHelper {
               event.setContent(message.getContent().toString());
 
             }
+
+
+
+        if(message instanceof GmailMessage){
+          long msgId   = ((GmailMessage) message).getMsgId();
+            long threadID = ((GmailMessage) message).getThrId();
+            event.setMessageID(msgId);
+            event.setThreadID(threadID);
+
+        }
+
+
         } catch (MessagingException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {

@@ -5,17 +5,10 @@ import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
 import org.wso2.carbon.databridge.commons.exception.*;
 import org.wso2.carbon.databridge.core.exception.DataBridgeException;
-
 import java.net.MalformedURLException;
 
 
-/**
- * Created with IntelliJ IDEA.
- * User: sachini
- * Date: 5/21/14
- * Time: 2:28 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class EmailEventPublisher {
 
     /**
